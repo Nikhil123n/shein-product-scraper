@@ -1,7 +1,7 @@
 // This defines what a scraping result looks like
 export interface ScrapeResult {
   success: boolean;
-  data?: any; // The gbRawData from Shein
+  data?: unknown; // The gbRawData from Shein
   error?: string;
   timestamp: string;
   url: string;
