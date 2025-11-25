@@ -4,7 +4,7 @@ import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import { addExtra } from 'puppeteer-extra';
 import { ProxyConfig, ScrapeResult, ScraperConfig } from './types';
 import { randomDelay, sleep } from './utils/delays';
-import { getRandomUserAgent, getRandomViewport } from './utils/fingerprints';
+import { getRandomUserAgent, getRandomViewport, getRandomLanguage } from './utils/fingerprints';
 import { ProxyManager } from './proxyManager';
 
 // Add stealth plugin to puppeteer
@@ -129,6 +129,20 @@ export class SheinScraper {
         const viewport = getRandomViewport();
         await page.setViewport(viewport);
         console.log(`📱 Viewport: ${viewport.width}x${viewport.height}`);
+
+        // Set additional headers to look more like a real browser
+        const language = getRandomLanguage();
+        await page.setExtraHTTPHeaders({
+          'Accept-Language': language,
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+          'Accept-Encoding': 'gzip, deflate, br',
+          'Connection': 'keep-alive',
+          'Upgrade-Insecure-Requests': '1',
+          'Sec-Fetch-Dest': 'document',
+          'Sec-Fetch-Mode': 'navigate',
+          'Sec-Fetch-Site': 'none',
+          'Cache-Control': 'max-age=0',
+        });
 
         // Set timeout
         page.setDefaultTimeout(timeout);
