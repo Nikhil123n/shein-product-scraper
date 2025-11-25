@@ -21,6 +21,10 @@ export class SheinScraper {
     this.useProxy = useProxy;
   }
 
+  public getProxyStats() {
+    return this['proxyManager'].getStats();
+  }
+
   /**
    * Initialize proxies if needed
    */
@@ -93,10 +97,7 @@ export class SheinScraper {
    */
   async scrapeProduct(url: string, config: ScraperConfig = {}): Promise<ScrapeResult> {
     const startTime = Date.now();
-    const {
-      timeout = 60000,
-      retries = 3,
-    } = config;
+    const { timeout = 60000, retries = 3 } = config;
 
     let lastError: string = '';
 
@@ -109,7 +110,7 @@ export class SheinScraper {
     // Retry logic
     for (let attempt = 1; attempt <= retries; attempt++) {
       let page: Page | null = null;
-      
+
       try {
         console.log(`\n🔍 Attempt ${attempt}/${retries} - Scraping: ${cleanUrl}`);
 
@@ -151,7 +152,7 @@ export class SheinScraper {
 
         // Check for CAPTCHA
         const hasCaptcha = await page.evaluate(() => {
-          // @ts-ignore - document exists in browser context
+          // @ts-expect-error - document exists in browser context
           const content = document.body.innerHTML.toLowerCase();
           return content.includes('captcha') || content.includes('challenge');
         });
@@ -166,7 +167,7 @@ export class SheinScraper {
         // Extract window.gbRawData
         console.log('📦 Extracting gbRawData...');
         const gbRawData = await page.evaluate(() => {
-          // @ts-ignore
+          // @ts-expect-error - window exists in browser context
           return window.gbRawData || null;
         });
 
@@ -187,16 +188,17 @@ export class SheinScraper {
           timestamp: new Date().toISOString(),
           url: cleanUrl,
         };
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
 
-      } catch (error: any) {
-        lastError = error.message;
-        console.error(`❌ Attempt ${attempt} failed:`, error.message);
+        lastError = message;
+        console.error(`❌ Attempt ${attempt} failed:`, message);
 
         // Clean up page if it's still open
         if (page) {
           try {
             await page.close();
-          } catch (e) {
+          } catch {
             // Ignore close errors
           }
         }
@@ -212,6 +214,7 @@ export class SheinScraper {
 
     // All retries failed
     const elapsed = Date.now() - startTime;
+    console.error(`❌ All retries failed after ${elapsed}ms`);
     return {
       success: false,
       error: lastError,
