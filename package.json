@@ -8,9 +8,9 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "test": "ts-node src/testScraper.ts",
-    "lint": "eslint -c .eslintrc.json \"src/**/*.ts\" --ext .ts,.js",
-    "lint:fix": "eslint -c .eslintrc.json \"src/**/*.ts\" --ext .ts,.js --fix",
-    "format": "prettier --write \"src/**/*.ts\""
+    "lint": "eslint \"src/**/*.{ts,js}\"",
+    "lint:fix": "eslint \"src/**/*.{ts,js}\" --fix",
+    "format": "prettier --write \"src/**/*.{ts,js}\""
   },
   "keywords": [],
   "author": "",
@@ -32,7 +32,7 @@
     "@types/node": "^24.10.1",
     "@typescript-eslint/eslint-plugin": "^8.48.0",
     "@typescript-eslint/parser": "^8.48.0",
-    "eslint": "^9.39.1",
+    "eslint": "^8.57.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "nodemon": "^3.1.11",
