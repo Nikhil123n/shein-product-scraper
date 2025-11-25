@@ -28,6 +28,3 @@ Thumbs.db
 # Debug screenshots
 debug-*.png
 captcha-detected.png
-
-# Proxy credentials (IMPORTANT)
-src/webshareProxies.ts
