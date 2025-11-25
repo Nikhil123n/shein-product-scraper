@@ -20,13 +20,13 @@ export class ProxyManager {
   private initializeWebshareProxies() {
     if (WEBSHARE_PROXIES.length > 0) {
       console.log('🔐 Loading WebShare proxies...');
-      
+
       for (const proxyString of WEBSHARE_PROXIES) {
         try {
           const [credentials, hostPort] = proxyString.split('@');
           const [username, password] = credentials.split(':');
           const [host, port] = hostPort.split(':');
-          
+
           this.proxies.push({
             host,
             port: parseInt(port),
@@ -34,10 +34,10 @@ export class ProxyManager {
             password,
           });
         } catch (error) {
-          console.warn('⚠️ Failed to parse proxy:', proxyString);
+          console.warn('⚠️ Failed to parse proxy:', proxyString, error);
         }
       }
-      
+
       console.log(`✅ Loaded ${this.proxies.length} WebShare proxies`);
       this.isInitialized = true;
     }
@@ -60,7 +60,7 @@ export class ProxyManager {
 
     try {
       console.log('🔍 Fetching free proxies (fallback)...');
-      
+
       const response = await axios.get<string>('https://api.proxyscrape.com/v2/', {
         params: {
           request: 'displayproxies',
@@ -72,9 +72,9 @@ export class ProxyManager {
         },
         timeout: 10000,
       });
-      
+
       const proxyList = response.data.split('\n').filter((p: string) => p.trim());
-      
+
       console.log(`📥 Found ${proxyList.length} free proxies`);
 
       // Parse and add proxies (take only 10 as free proxies are often bad)
@@ -90,9 +90,8 @@ export class ProxyManager {
 
       console.log(`✅ Added ${this.proxies.length} proxies to pool`);
       this.isInitialized = true;
-
-    } catch (error: any) {
-      console.warn('⚠️ Failed to fetch free proxies:', error.message);
+    } catch (error: unknown) {
+      console.warn('⚠️ Failed to fetch free proxies:', (error as Error).message);
       console.log('📍 Continuing without proxies (direct connection)');
       this.isInitialized = true;
     }
