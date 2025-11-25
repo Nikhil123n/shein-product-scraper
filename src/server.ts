@@ -36,7 +36,7 @@ app.get('/', (req: Request, res: Response) => {
 
 // Stats endpoint
 app.get('/stats', (req: Request, res: Response) => {
-  const stats = (scraper as any).proxyManager.getStats();
+  const stats = scraper.getProxyStats();
   res.json({
     ready: isReady,
     useProxies: USE_PROXIES,
@@ -91,12 +91,12 @@ app.get('/shein', async (req: Request, res: Response) => {
     } else {
       res.status(500).json(result);
     }
-
-  } catch (error: any) {
-    console.error('💥 Server error:', error);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error('💥 Server error:', message);
     res.status(500).json({
       success: false,
-      error: error.message,
+      error: message,
       timestamp: new Date().toISOString(),
     });
   }
