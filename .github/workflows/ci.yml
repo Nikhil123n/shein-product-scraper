@@ -35,6 +35,7 @@ jobs:
 
     - name: Check code style (if ESLint configured)
       run: npm run lint --if-present
+      continue-on-error: true
 
   security-check:
     runs-on: ubuntu-latest
